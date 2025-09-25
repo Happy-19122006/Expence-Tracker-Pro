@@ -330,13 +330,47 @@ class ExpenseTracker {
         e.preventDefault();
         
         const type = document.querySelector('.type-btn.active').dataset.type;
-        const description = document.getElementById('transaction-description').value;
-        const amount = parseFloat(document.getElementById('transaction-amount').value);
+        const description = document.getElementById('transaction-description').value.trim();
+        const amountInput = document.getElementById('transaction-amount');
+        const amount = parseFloat(amountInput.value);
         const category = document.getElementById('transaction-category').value;
         const date = document.getElementById('transaction-date').value;
 
-        if (!description || !amount || !category || !date) {
-            this.showNotification('Please fill all fields!', 'error');
+        // Enhanced validation
+        if (!description) {
+            this.showNotification('Please enter a description!', 'error');
+            return;
+        }
+
+        if (!amount || isNaN(amount) || amount <= 0) {
+            this.showNotification('Please enter a valid positive amount!', 'error');
+            amountInput.focus();
+            return;
+        }
+
+        if (amount > 999999999) {
+            this.showNotification('Amount too large! Maximum allowed is 999,999,999', 'error');
+            amountInput.focus();
+            return;
+        }
+
+        if (!category) {
+            this.showNotification('Please select a category!', 'error');
+            return;
+        }
+
+        if (!date) {
+            this.showNotification('Please select a date!', 'error');
+            return;
+        }
+
+        // Check for future dates
+        const selectedDate = new Date(date);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // End of today
+        
+        if (selectedDate > today) {
+            this.showNotification('Cannot add transactions for future dates!', 'error');
             return;
         }
 
@@ -525,6 +559,7 @@ class ExpenseTracker {
         
         this.updateRecentTransactions(filteredTransactions);
         this.updateExpensePieChart(filteredTransactions);
+        this.updateQuickStats();
     }
 
     getFilteredTransactionsByPeriod(period) {
@@ -1080,6 +1115,47 @@ class ExpenseTracker {
 
     addGlowEffect(element) {
         element.style.animation = 'glow 2s ease-in-out infinite';
+    }
+
+    // Quick Stats Methods
+    updateQuickStats() {
+        this.updateTodaysExpense();
+        this.updateMonthlySavings();
+        this.updateBiggestExpense();
+    }
+
+    updateTodaysExpense() {
+        const today = new Date().toISOString().split('T')[0];
+        const todaysExpenses = this.transactions
+            .filter(t => t.date === today && t.type === 'expense')
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        document.getElementById('today-expense').textContent = `$${todaysExpenses.toFixed(2)}`;
+    }
+
+    updateMonthlySavings() {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthlyTransactions = this.transactions.filter(t => new Date(t.date) >= startOfMonth);
+        
+        const monthlyIncome = monthlyTransactions
+            .filter(t => t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        const monthlyExpenses = monthlyTransactions
+            .filter(t => t.type === 'expense')
+            .reduce((sum, t) => sum + t.amount, 0);
+        
+        const savings = monthlyIncome - monthlyExpenses;
+        document.getElementById('month-savings').textContent = `$${savings.toFixed(2)}`;
+    }
+
+    updateBiggestExpense() {
+        const biggestExpense = this.transactions
+            .filter(t => t.type === 'expense')
+            .reduce((max, t) => t.amount > max.amount ? t : max, { amount: 0 });
+        
+        document.getElementById('biggest-expense').textContent = `$${biggestExpense.amount.toFixed(2)}`;
     }
 }
 

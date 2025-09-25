@@ -175,6 +175,36 @@
                     </div>
                 </div>
 
+                <div class="quick-stats-grid">
+                    <div class="quick-stat-card today">
+                        <div class="quick-stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="quick-stat-content">
+                            <h4>Today's Expense</h4>
+                            <p class="quick-stat-value" id="today-expense">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="quick-stat-card savings">
+                        <div class="quick-stat-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="quick-stat-content">
+                            <h4>This Month's Savings</h4>
+                            <p class="quick-stat-value" id="month-savings">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="quick-stat-card biggest">
+                        <div class="quick-stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="quick-stat-content">
+                            <h4>Biggest Expense</h4>
+                            <p class="quick-stat-value" id="biggest-expense">$0.00</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="dashboard-grid">
                     <div class="chart-container">
                         <h3>Expense Categories</h3>
@@ -403,7 +433,7 @@
                 </div>
                 <div class="form-group">
                     <label for="transaction-amount">Amount</label>
-                    <input type="number" id="transaction-amount" step="0.01" required>
+                    <input type="number" id="transaction-amount" step="0.01" min="0.01" max="999999999" required>
                 </div>
                 <div class="form-group">
                     <label for="transaction-category">Category</label>
