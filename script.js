@@ -31,17 +31,25 @@ class ExpenseTracker {
         setTimeout(() => {
             this.hideLoadingScreen();
             this.checkAuthentication();
-        }, 2000);
+        }, 500);
     }
 
     showLoadingScreen() {
         const loadingScreen = document.getElementById('loading-screen');
-        loadingScreen.classList.remove('hidden');
+        if (loadingScreen) {
+            loadingScreen.classList.remove('hidden');
+            loadingScreen.style.display = 'flex';
+        }
     }
 
     hideLoadingScreen() {
         const loadingScreen = document.getElementById('loading-screen');
-        loadingScreen.classList.add('hidden');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500); // Wait for transition to complete
+        }
     }
 
     setupEventListeners() {
@@ -60,8 +68,14 @@ class ExpenseTracker {
             this.toggleTheme();
         });
 
-        // Logout
+        // Profile and logout
+        document.getElementById('profile-header-btn').addEventListener('click', () => this.navigateToProfile());
+        document.getElementById('profile-back-btn').addEventListener('click', () => this.goBackFromProfile());
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+        document.getElementById('change-avatar-btn').addEventListener('click', () => this.changeAvatar());
+        document.getElementById('remove-avatar-btn').addEventListener('click', () => this.removeAvatar());
+        document.getElementById('save-profile-btn').addEventListener('click', () => this.saveProfile());
+        document.getElementById('change-password-btn').addEventListener('click', () => this.changePassword());
 
         // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -110,12 +124,14 @@ class ExpenseTracker {
         // Report period
         document.getElementById('report-period').addEventListener('change', (e) => this.updateReportPeriod(e.target.value));
 
+
         // Close modal on outside click
         document.getElementById('transaction-modal').addEventListener('click', (e) => {
             if (e.target.id === 'transaction-modal') {
                 this.closeModal();
             }
         });
+
     }
 
     // Authentication Methods
@@ -191,11 +207,8 @@ class ExpenseTracker {
     }
 
     checkAuthentication() {
-        if (this.currentUser) {
-            this.showApp();
-        } else {
-            this.showAuth();
-        }
+        // Always show the app, login is optional
+        this.showApp();
     }
 
     showAuth() {
@@ -206,12 +219,14 @@ class ExpenseTracker {
     showApp() {
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
-        document.getElementById('user-name').textContent = this.currentUser.name;
+        document.getElementById('user-name').textContent = this.currentUser ? this.currentUser.name : 'Anonymous User';
+        this.updateHeaderProfile();
         this.loadTransactions();
         this.updateDashboard();
         this.populateCategories();
         this.animateElements();
     }
+
 
     logout() {
         this.currentUser = null;
@@ -228,6 +243,7 @@ class ExpenseTracker {
         e.target.classList.add('active');
         document.getElementById(`${tab}-form`).classList.add('active');
     }
+
 
     // Theme Management
     initializeTheme() {
@@ -274,18 +290,22 @@ class ExpenseTracker {
             this.updateAnalytics();
         } else if (section === 'reports') {
             this.updateReports();
+        } else if (section === 'profile') {
+            this.updateProfile();
         }
     }
 
     // Transaction Management
     loadTransactions() {
-        const stored = localStorage.getItem(`expenseTrackerTransactions_${this.currentUser.email}`);
+        const userKey = this.currentUser ? this.currentUser.email : 'anonymous';
+        const stored = localStorage.getItem(`expenseTrackerTransactions_${userKey}`);
         this.transactions = stored ? JSON.parse(stored) : [];
         this.renderTransactions();
     }
 
     saveTransactions() {
-        localStorage.setItem(`expenseTrackerTransactions_${this.currentUser.email}`, JSON.stringify(this.transactions));
+        const userKey = this.currentUser ? this.currentUser.email : 'anonymous';
+        localStorage.setItem(`expenseTrackerTransactions_${userKey}`, JSON.stringify(this.transactions));
     }
 
     openTransactionModal(transaction = null) {
@@ -844,6 +864,7 @@ class ExpenseTracker {
 
     // Export Functions
     exportToPDF() {
+        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
@@ -886,6 +907,7 @@ class ExpenseTracker {
     }
 
     exportToCSV() {
+        
         const period = document.getElementById('report-period').value;
         const transactions = this.getFilteredTransactionsByPeriod(period);
         
@@ -913,6 +935,7 @@ class ExpenseTracker {
     }
 
     exportAllData() {
+        
         const data = {
             user: this.currentUser,
             transactions: this.transactions,
@@ -1156,6 +1179,210 @@ class ExpenseTracker {
             .reduce((max, t) => t.amount > max.amount ? t : max, { amount: 0 });
         
         document.getElementById('biggest-expense').textContent = `$${biggestExpense.amount.toFixed(2)}`;
+    }
+
+    // Profile Management
+    updateProfile() {
+        if (this.currentUser) {
+            // Update profile display
+            document.getElementById('profile-name').textContent = this.currentUser.name || 'User';
+            document.getElementById('profile-email').textContent = this.currentUser.email || 'user@example.com';
+            
+            // Update profile inputs
+            document.getElementById('profile-name-input').value = this.currentUser.name || '';
+            document.getElementById('profile-email-input').value = this.currentUser.email || '';
+            document.getElementById('profile-phone-input').value = this.currentUser.phone || '';
+            document.getElementById('profile-gender-select').value = this.currentUser.gender || '';
+            document.getElementById('profile-dob-input').value = this.currentUser.dob || '';
+            document.getElementById('profile-address-input').value = this.currentUser.address || '';
+            
+            // Update profile picture
+            if (this.currentUser.picture) {
+                document.getElementById('profile-image').src = this.currentUser.picture;
+                document.getElementById('remove-avatar-btn').style.display = 'block';
+            } else {
+                // Show placeholder for profile picture
+                document.getElementById('profile-image').src = 'https://via.placeholder.com/120x120/cccccc/666666?text=Upload+Photo';
+                document.getElementById('remove-avatar-btn').style.display = 'none';
+            }
+            
+            // Update profile status
+            const statusElement = document.getElementById('profile-status');
+            statusElement.textContent = 'Free User';
+            statusElement.style.background = 'var(--success-color)';
+        } else {
+            // Anonymous user
+            document.getElementById('profile-name').textContent = 'Anonymous User';
+            document.getElementById('profile-email').textContent = 'Not logged in';
+            document.getElementById('profile-status').textContent = 'Guest User';
+            document.getElementById('profile-status').style.background = 'var(--warning-color)';
+            
+            // Clear inputs
+            document.getElementById('profile-name-input').value = '';
+            document.getElementById('profile-email-input').value = '';
+            document.getElementById('profile-phone-input').value = '';
+            document.getElementById('profile-gender-select').value = '';
+            document.getElementById('profile-dob-input').value = '';
+            document.getElementById('profile-address-input').value = '';
+            
+            // Show placeholder for profile picture
+            document.getElementById('profile-image').src = 'https://via.placeholder.com/120x120/cccccc/666666?text=Upload+Photo';
+            document.getElementById('remove-avatar-btn').style.display = 'none';
+        }
+    }
+
+    updateHeaderProfile() {
+        const headerImage = document.getElementById('header-profile-image');
+        const headerIcon = document.getElementById('header-user-icon');
+        
+        if (this.currentUser && this.currentUser.picture) {
+            headerImage.src = this.currentUser.picture;
+            headerImage.style.display = 'block';
+            headerIcon.style.display = 'none';
+        } else {
+            headerImage.style.display = 'none';
+            headerIcon.style.display = 'block';
+        }
+    }
+
+    navigateToProfile() {
+        // Navigate to profile section
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        
+        const profileSection = document.getElementById('profile');
+        profileSection.classList.add('active');
+        
+        // Update profile data
+        this.updateProfile();
+        
+        // Add animation to the section
+        this.animateSection(profileSection);
+    }
+
+
+    changeAvatar() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    if (this.currentUser) {
+                        this.currentUser.picture = event.target.result;
+                        this.saveUserData();
+                    }
+                    document.getElementById('profile-image').src = event.target.result;
+                    document.getElementById('remove-avatar-btn').style.display = 'block';
+                    this.updateHeaderProfile(); // Update header profile picture too
+                    this.showNotification('Profile picture updated successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
+    removeAvatar() {
+        if (confirm('Are you sure you want to remove your profile picture?')) {
+            if (this.currentUser) {
+                this.currentUser.picture = null;
+                this.saveUserData();
+            }
+            
+            // Reset to placeholder
+            document.getElementById('profile-image').src = 'https://via.placeholder.com/120x120/cccccc/666666?text=Upload+Photo';
+            document.getElementById('remove-avatar-btn').style.display = 'none';
+            this.updateHeaderProfile(); // Update header profile picture too
+            this.showNotification('Profile picture removed successfully!', 'success');
+        }
+    }
+
+    goBackFromProfile() {
+        // Go back to dashboard
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        
+        const dashboardSection = document.getElementById('dashboard');
+        const dashboardNav = document.querySelector('[data-section="dashboard"]');
+        
+        dashboardSection.classList.add('active');
+        dashboardNav.classList.add('active');
+        
+        // Add animation to the section
+        this.animateSection(dashboardSection);
+    }
+
+    saveProfile() {
+        if (!this.currentUser) {
+            this.showNotification('Please login to save profile!', 'error');
+            return;
+        }
+
+        const name = document.getElementById('profile-name-input').value.trim();
+        const email = document.getElementById('profile-email-input').value.trim();
+        const phone = document.getElementById('profile-phone-input').value.trim();
+        const gender = document.getElementById('profile-gender-select').value;
+        const dob = document.getElementById('profile-dob-input').value;
+        const address = document.getElementById('profile-address-input').value.trim();
+
+        if (!name || !email) {
+            this.showNotification('Name and email are required!', 'error');
+            return;
+        }
+
+        // Update user data
+        this.currentUser.name = name;
+        this.currentUser.email = email;
+        this.currentUser.phone = phone;
+        this.currentUser.gender = gender;
+        this.currentUser.dob = dob;
+        this.currentUser.address = address;
+
+        // Save to localStorage
+        this.saveUserData();
+        
+        // Update display
+        this.updateProfile();
+        document.getElementById('user-name').textContent = name;
+        this.updateHeaderProfile(); // Update header profile picture
+        
+        this.showNotification('Profile saved successfully!', 'success');
+    }
+
+    changePassword() {
+        if (!this.currentUser) {
+            this.showNotification('Please login to change password!', 'error');
+            return;
+        }
+
+        const currentPassword = prompt('Enter current password:');
+        if (!currentPassword) return;
+
+        const newPassword = prompt('Enter new password:');
+        if (!newPassword || newPassword.length < 6) {
+            this.showNotification('New password must be at least 6 characters!', 'error');
+            return;
+        }
+
+        const confirmPassword = prompt('Confirm new password:');
+        if (newPassword !== confirmPassword) {
+            this.showNotification('Passwords do not match!', 'error');
+            return;
+        }
+
+        // Update password in stored users
+        const users = this.getStoredUsers();
+        const userIndex = users.findIndex(u => u.email === this.currentUser.email);
+        if (userIndex >= 0) {
+            users[userIndex].password = newPassword;
+            localStorage.setItem('expenseTrackerUsers', JSON.stringify(users));
+            this.showNotification('Password changed successfully!', 'success');
+        } else {
+            this.showNotification('User not found!', 'error');
+        }
     }
 }
 
