@@ -17,6 +17,7 @@ class ExpenseTracker {
         this.charts = {};
         this.currentFilter = 'all';
         this.editingTransaction = null;
+        this.isFirstTime = !localStorage.getItem('expenseTrackerOnboarding');
         
         this.init();
     }
@@ -224,6 +225,11 @@ class ExpenseTracker {
         document.getElementById('user-name').textContent = this.currentUser.name;
         this.loadTransactions();
         this.updateDashboard();
+        
+        // Show onboarding for first-time users
+        if (this.isFirstTime) {
+            setTimeout(() => this.startOnboarding(), 1000);
+        }
         this.populateCategories();
         this.animateElements();
     }
@@ -1124,6 +1130,205 @@ class ExpenseTracker {
 
     addGlowEffect(element) {
         element.style.animation = 'glow 2s ease-in-out infinite';
+    }
+
+    // Onboarding System
+    startOnboarding() {
+        const steps = [
+            {
+                target: '#dashboard',
+                title: 'Welcome to ExpenseTracker Pro!',
+                content: 'This is your dashboard where you can see your financial overview.',
+                position: 'bottom'
+            },
+            {
+                target: '#add-transaction-btn',
+                title: 'Add Transactions',
+                content: 'Click here to add new income or expense transactions.',
+                position: 'bottom'
+            },
+            {
+                target: '#analytics',
+                title: 'View Analytics',
+                content: 'Check your spending patterns and trends in the Analytics section.',
+                position: 'bottom'
+            },
+            {
+                target: '#reports',
+                title: 'Generate Reports',
+                content: 'Export your data as PDF or CSV reports for record keeping.',
+                position: 'bottom'
+            },
+            {
+                target: '#settings',
+                title: 'Customize Settings',
+                content: 'Manage your categories, profile, and app preferences here.',
+                position: 'bottom'
+            }
+        ];
+
+        this.showOnboardingStep(steps, 0);
+    }
+
+    showOnboardingStep(steps, index) {
+        if (index >= steps.length) {
+            this.completeOnboarding();
+            return;
+        }
+
+        const step = steps[index];
+        const target = document.querySelector(step.target);
+        
+        if (!target) {
+            this.showOnboardingStep(steps, index + 1);
+            return;
+        }
+
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'onboarding-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        // Create tooltip
+        const tooltip = document.createElement('div');
+        tooltip.className = 'onboarding-tooltip';
+        tooltip.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        tooltip.innerHTML = `
+            <h3 style="margin: 0 0 10px 0; color: #6366f1; font-size: 18px;">${step.title}</h3>
+            <p style="margin: 0 0 20px 0; color: #6b7280; line-height: 1.5;">${step.content}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #9ca3af; font-size: 14px;">${index + 1} of ${steps.length}</span>
+                <div>
+                    ${index > 0 ? '<button class="onboarding-btn-secondary" style="margin-right: 10px;">Previous</button>' : ''}
+                    <button class="onboarding-btn-primary">${index === steps.length - 1 ? 'Finish' : 'Next'}</button>
+                </div>
+            </div>
+        `;
+
+        overlay.appendChild(tooltip);
+        document.body.appendChild(overlay);
+
+        // Position tooltip
+        const rect = target.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        
+        let top = rect.bottom + 10;
+        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+        
+        if (left < 10) left = 10;
+        if (left + tooltipRect.width > window.innerWidth - 10) {
+            left = window.innerWidth - tooltipRect.width - 10;
+        }
+        if (top + tooltipRect.height > window.innerHeight - 10) {
+            top = rect.top - tooltipRect.height - 10;
+        }
+
+        tooltip.style.position = 'absolute';
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+
+        // Highlight target
+        target.style.position = 'relative';
+        target.style.zIndex = '10000';
+        target.style.outline = '3px solid #6366f1';
+        target.style.borderRadius = '8px';
+
+        // Event listeners
+        const nextBtn = tooltip.querySelector('.onboarding-btn-primary');
+        const prevBtn = tooltip.querySelector('.onboarding-btn-secondary');
+        const skipBtn = document.createElement('button');
+        skipBtn.textContent = 'Skip Tour';
+        skipBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 12px;
+        `;
+        tooltip.appendChild(skipBtn);
+
+        nextBtn.addEventListener('click', () => {
+            this.cleanupOnboardingStep(overlay, target);
+            this.showOnboardingStep(steps, index + 1);
+        });
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                this.cleanupOnboardingStep(overlay, target);
+                this.showOnboardingStep(steps, index - 1);
+            });
+        }
+
+        skipBtn.addEventListener('click', () => {
+            this.cleanupOnboardingStep(overlay, target);
+            this.completeOnboarding();
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .onboarding-btn-primary, .onboarding-btn-secondary {
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .onboarding-btn-primary {
+                background: #6366f1;
+                color: white;
+            }
+            .onboarding-btn-secondary {
+                background: #f3f4f6;
+                color: #6b7280;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    cleanupOnboardingStep(overlay, target) {
+        if (overlay && document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+        }
+        if (target) {
+            target.style.outline = '';
+            target.style.borderRadius = '';
+            target.style.zIndex = '';
+        }
+    }
+
+    completeOnboarding() {
+        localStorage.setItem('expenseTrackerOnboarding', 'completed');
+        this.isFirstTime = false;
+        this.showNotification('Welcome to ExpenseTracker Pro! 🎉', 'success');
     }
 }
 
