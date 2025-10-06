@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExpenseTracker Pro - Modern Personal Finance</title>
+    <title>ExpenseTracker Pro - Modern Personal Finance Manager</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen hidden">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p>Loading ExpenseTracker Pro...</p>
-        </div>
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner"></div>
+        <p>Loading ExpenseTracker Pro...</p>
     </div>
 
     <!-- Auth Container -->
@@ -28,510 +23,181 @@
                 <p>Your Modern Personal Finance Manager</p>
             </div>
             
-            <div class="auth-tabs">
-                <button class="tab-btn active" data-tab="login">Login</button>
-                <button class="tab-btn" data-tab="signup">Sign Up</button>
-            </div>
-
-            <form id="login-form" class="auth-form active">
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="login-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="login-password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="auth-btn">
-                    <span>Login</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-                
-            </form>
-
-            <form id="signup-form" class="auth-form">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="signup-name" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="signup-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="signup-password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="auth-btn">
-                    <span>Sign Up</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-                
-            </form>
-        </div>
-    </div>
-
-    <!-- Main App Container -->
-    <div id="app-container" class="app-container hidden">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-wallet"></i>
-                    <span>ExpenseTracker Pro</span>
-                </div>
-                <div class="header-actions">
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <div class="user-menu">
-                        <button class="user-btn" id="profile-header-btn">
-                            <div class="user-avatar">
-                                <img id="header-profile-image" src="" alt="Profile" style="display: none;">
-                                <i class="fas fa-user-circle" id="header-user-icon"></i>
-                            </div>
-                            <span id="user-name">User</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-section="dashboard">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-section="transactions">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="#" class="nav-item" data-section="analytics">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Analytics</span>
-                </a>
-                <a href="#" class="nav-item" data-section="reports">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="#" class="nav-item" data-section="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
-                <div class="section-header">
-                    <h2>Dashboard</h2>
-                    <div class="date-filter">
-                        <select id="dashboard-filter">
-                            <option value="all">All Time</option>
-                            <option value="month">This Month</option>
-                            <option value="year">This Year</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card balance">
-                        <div class="stat-icon">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Balance</h3>
-                            <p class="stat-value" id="balance-amount">$0.00</p>
-                        </div>
-                    </div>
-                    <div class="stat-card income">
-                        <div class="stat-icon">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Total Income</h3>
-                            <p class="stat-value" id="income-amount">$0.00</p>
-                        </div>
-                    </div>
-                    <div class="stat-card expense">
-                        <div class="stat-icon">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Total Expenses</h3>
-                            <p class="stat-value" id="expense-amount">$0.00</p>
-                        </div>
-                    </div>
-                    <div class="stat-card transactions">
-                        <div class="stat-icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Transactions</h3>
-                            <p class="stat-value" id="transaction-count">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="quick-stats-grid">
-                    <div class="quick-stat-card today">
-                        <div class="quick-stat-icon">
-                            <i class="fas fa-calendar-day"></i>
-                        </div>
-                        <div class="quick-stat-content">
-                            <h4>Today's Expense</h4>
-                            <p class="quick-stat-value" id="today-expense">$0.00</p>
-                        </div>
-                    </div>
-                    <div class="quick-stat-card savings">
-                        <div class="quick-stat-icon">
-                            <i class="fas fa-piggy-bank"></i>
-                        </div>
-                        <div class="quick-stat-content">
-                            <h4>This Month's Savings</h4>
-                            <p class="quick-stat-value" id="month-savings">$0.00</p>
-                        </div>
-                    </div>
-                    <div class="quick-stat-card biggest">
-                        <div class="quick-stat-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="quick-stat-content">
-                            <h4>Biggest Expense</h4>
-                            <p class="quick-stat-value" id="biggest-expense">$0.00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="chart-container">
-                        <h3>Expense Categories</h3>
-                        <canvas id="expense-pie-chart"></canvas>
-                    </div>
-                    <div class="recent-transactions">
-                        <h3>Recent Transactions</h3>
-                        <div id="recent-transactions-list" class="transactions-list">
-                            <div class="empty-state">
-                                <i class="fas fa-receipt"></i>
-                                <p>No transactions yet</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Transactions Section -->
-            <section id="transactions" class="content-section">
-                <div class="section-header">
-                    <h2>Transactions</h2>
-                    <div class="section-actions">
-                        <button id="add-transaction-btn" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Add Transaction
-                        </button>
-                    </div>
-                </div>
-
-                <div class="filters-bar">
-                    <div class="filter-group">
-                        <select id="type-filter">
-                            <option value="all">All Types</option>
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-                        </select>
-                        <select id="category-filter">
-                            <option value="all">All Categories</option>
-                        </select>
-                        <input type="date" id="date-filter" placeholder="Filter by date">
-                    </div>
-                </div>
-
-                <div class="transactions-table-container">
-                    <table class="transactions-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactions-table-body">
-                            <tr class="empty-row">
-                                <td colspan="6" class="empty-state">
-                                    <i class="fas fa-receipt"></i>
-                                    <p>No transactions found</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Analytics Section -->
-            <section id="analytics" class="content-section">
-                <div class="section-header">
-                    <h2>Analytics</h2>
-                    <div class="date-filter">
-                        <select id="analytics-filter">
-                            <option value="month">This Month</option>
-                            <option value="year">This Year</option>
-                            <option value="all">All Time</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="analytics-grid">
-                    <div class="chart-container large">
-                        <h3>Monthly Trends</h3>
-                        <canvas id="monthly-trends-chart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>Category Breakdown</h3>
-                        <canvas id="category-bar-chart"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Reports Section -->
-            <section id="reports" class="content-section">
-                <div class="section-header">
-                    <h2>Reports</h2>
-                    <div class="section-actions">
-                        <button id="export-pdf-btn" class="btn btn-secondary">
-                            <i class="fas fa-file-pdf"></i>
-                            Export PDF
-                        </button>
-                        <button id="export-csv-btn" class="btn btn-secondary">
-                            <i class="fas fa-file-csv"></i>
-                            Export CSV
-                        </button>
-                    </div>
-                </div>
-
-                <div class="reports-filters">
-                    <div class="filter-group">
-                        <select id="report-period">
-                            <option value="month">This Month</option>
-                            <option value="year">This Year</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                        <input type="date" id="custom-start-date" class="hidden">
-                        <input type="date" id="custom-end-date" class="hidden">
-                    </div>
-                </div>
-
-                <div class="report-summary">
-                    <div class="summary-cards">
-                        <div class="summary-card">
-                            <h4>Total Income</h4>
-                            <p id="report-income">$0.00</p>
-                        </div>
-                        <div class="summary-card">
-                            <h4>Total Expenses</h4>
-                            <p id="report-expenses">$0.00</p>
-                        </div>
-                        <div class="summary-card">
-                            <h4>Net Balance</h4>
-                            <p id="report-balance">$0.00</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- Profile Section -->
-            <section id="profile" class="content-section">
-                <div class="section-header">
-                    <button class="back-btn" id="profile-back-btn">
-                        <i class="fas fa-arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>Profile</h2>
-                </div>
-
-                <div class="profile-container">
-                    <div class="profile-card">
-                        <div class="profile-header">
-                            <div class="profile-avatar">
-                                <img id="profile-image" src="https://via.placeholder.com/120" alt="Profile Picture">
-                                <div class="avatar-actions">
-                                    <button class="change-avatar-btn" id="change-avatar-btn" title="Upload Photo">
-                                        <i class="fas fa-camera"></i>
-                                    </button>
-                                    <button class="remove-avatar-btn" id="remove-avatar-btn" title="Remove Photo" style="display: none;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="profile-info">
-                                <h3 id="profile-name">User Name</h3>
-                                <p id="profile-email">user@example.com</p>
-                                <span class="profile-status" id="profile-status">Free User</span>
-                            </div>
-                        </div>
-                        
-                        <div class="profile-details">
-                            <div class="detail-item">
-                                <label>Full Name:</label>
-                                <input type="text" id="profile-name-input" placeholder="Enter your full name">
-                            </div>
-                            <div class="detail-item">
-                                <label>Email:</label>
-                                <input type="email" id="profile-email-input" placeholder="Enter your email">
-                            </div>
-                            <div class="detail-item">
-                                <label>Phone:</label>
-                                <input type="tel" id="profile-phone-input" placeholder="Enter your phone number">
-                            </div>
-                            <div class="detail-item">
-                                <label>Gender:</label>
-                                <select id="profile-gender-select">
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="detail-item">
-                                <label>Date of Birth:</label>
-                                <input type="date" id="profile-dob-input">
-                            </div>
-                            <div class="detail-item">
-                                <label>Address:</label>
-                                <textarea id="profile-address-input" placeholder="Enter your address" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="profile-actions">
-                            <button class="btn btn-primary" id="save-profile-btn">
-                                <i class="fas fa-save"></i>
-                                Save Profile
-                            </button>
-                            <button class="btn btn-secondary" id="change-password-btn">
-                                <i class="fas fa-key"></i>
-                                Change Password
-                            </button>
-                            <button class="btn btn-danger" id="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Settings Section -->
-            <section id="settings" class="content-section">
-                <div class="section-header">
-                    <h2>Settings</h2>
-                </div>
-
-                <div class="settings-grid">
-                    <div class="settings-card">
-                        <h3>Appearance</h3>
-                        <div class="setting-item">
-                            <label>Theme</label>
-                            <select id="theme-setting">
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                                <option value="auto">Auto</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <h3>Categories</h3>
-                        <div class="categories-management">
-                            <div class="add-category">
-                                <input type="text" id="new-category" placeholder="Add new category">
-                                <button id="add-category-btn" class="btn btn-primary">Add</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="settings-card">
-                        <h3>Data Management</h3>
-                        <div class="setting-item">
-                            <button id="export-data-btn" class="btn btn-secondary">
-                                <i class="fas fa-download"></i>
-                                Export All Data
-                            </button>
-                        </div>
-                        <div class="setting-item">
-                            <button id="import-data-btn" class="btn btn-secondary">
-                                <i class="fas fa-upload"></i>
-                                Import Data
-                            </button>
-                            <input type="file" id="import-file" accept=".json" class="hidden">
-                        </div>
-                        <div class="setting-item">
-                            <button id="clear-data-btn" class="btn btn-danger">
-                                <i class="fas fa-trash"></i>
-                                Clear All Data
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Transaction Modal -->
-    <div id="transaction-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">Add Transaction</h3>
-                <button class="modal-close">
+            <!-- Error Alert -->
+            <div id="error-alert" class="alert alert-error hidden">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-message"></span>
+                <button type="button" class="alert-close" onclick="hideAlert()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="transaction-form">
-                <div class="form-group">
-                    <label>Type</label>
-                    <div class="type-selector">
-                        <button type="button" class="type-btn active" data-type="expense">
-                            <i class="fas fa-arrow-down"></i>
-                            Expense
-                        </button>
-                        <button type="button" class="type-btn" data-type="income">
-                            <i class="fas fa-arrow-up"></i>
-                            Income
-                        </button>
-                    </div>
+
+            <!-- Success Alert -->
+            <div id="success-alert" class="alert alert-success hidden">
+                <i class="fas fa-check-circle"></i>
+                <span id="success-message"></span>
+                <button type="button" class="alert-close" onclick="hideAlert()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="auth-tabs" role="tablist" aria-label="Authentication options">
+                <button id="login-tab" class="tab-btn active" data-tab="login" role="tab" aria-selected="true" aria-controls="login-form">Login</button>
+                <button id="signup-tab" class="tab-btn" data-tab="signup" role="tab" aria-selected="false" aria-controls="signup-form">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active" role="form" aria-label="Login form" aria-labelledby="login-tab">
+                <div class="input-group">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <input type="email" id="login-email" placeholder="Email" required aria-label="Email address">
+                    <div class="field-error hidden" id="login-email-error"></div>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-description">Description</label>
-                    <input type="text" id="transaction-description" required>
+                <div class="input-group">
+                    <i class="fas fa-lock" aria-hidden="true"></i>
+                    <input type="password" id="login-password" placeholder="Password" required aria-label="Password">
+                    <div class="field-error hidden" id="login-password-error"></div>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-amount">Amount</label>
-                    <input type="number" id="transaction-amount" step="0.01" min="0.01" max="999999999" required>
+                
+                <div class="auth-options">
+                    <a href="#" id="forgot-password-link" class="forgot-link">Forgot Password?</a>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-category">Category</label>
-                    <select id="transaction-category" required>
-                        <option value="">Select Category</option>
-                    </select>
+                
+                <button type="submit" class="auth-btn primary" id="login-btn" aria-label="Login to account">
+                    <span class="btn-text">Login</span>
+                    <i class="fas fa-spinner fa-spin btn-loading hidden" aria-hidden="true"></i>
+                    <i class="fas fa-arrow-right btn-icon" aria-hidden="true"></i>
+                </button>
+                
+                <div class="auth-divider">
+                    <span>or continue with</span>
                 </div>
-                <div class="form-group">
-                    <label for="transaction-date">Date</label>
-                    <input type="date" id="transaction-date" required>
+                
+                <div class="oauth-buttons">
+                    <button type="button" class="oauth-btn google-btn" id="google-login" aria-label="Continue with Google">
+                        <i class="fab fa-google" aria-hidden="true"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                    <button type="button" class="oauth-btn facebook-btn" id="facebook-login" aria-label="Continue with Facebook">
+                        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                        <span>Continue with Facebook</span>
+                    </button>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Transaction</button>
+                
+                <button type="button" class="auth-btn guest-btn" id="skip-login" aria-label="Skip login and continue as guest">
+                    <i class="fas fa-user-clock" aria-hidden="true"></i>
+                    <span>Skip for Now (Guest Access)</span>
+                </button>
+            </form>
+
+            <!-- Create Account Form -->
+            <form id="signup-form" class="auth-form" role="form" aria-label="Create account form" aria-labelledby="signup-tab">
+                <div class="input-group">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <input type="email" id="signup-email" placeholder="Email" required aria-label="Email address">
+                    <div class="field-error hidden" id="signup-email-error"></div>
                 </div>
+                <div class="input-group">
+                    <i class="fas fa-lock" aria-hidden="true"></i>
+                    <input type="password" id="signup-password" placeholder="Password" required aria-label="Password">
+                    <div class="password-strength" id="password-strength" role="progressbar" aria-label="Password strength"></div>
+                    <div class="field-error hidden" id="signup-password-error"></div>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock" aria-hidden="true"></i>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required aria-label="Confirm password">
+                    <div class="field-error hidden" id="signup-confirm-password-error"></div>
+                </div>
+                
+                <div class="password-requirements">
+                    <small>Password must be at least 3 characters</small>
+                </div>
+                
+                <button type="submit" class="auth-btn primary" id="signup-btn" aria-label="Create new account">
+                    <span class="btn-text">Create Account</span>
+                    <i class="fas fa-spinner fa-spin btn-loading hidden" aria-hidden="true"></i>
+                    <i class="fas fa-arrow-right btn-icon" aria-hidden="true"></i>
+                </button>
+                
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+                
+                <div class="oauth-buttons">
+                    <button type="button" class="oauth-btn google-btn" id="google-signup" aria-label="Create account with Google">
+                        <i class="fab fa-google" aria-hidden="true"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                    <button type="button" class="oauth-btn facebook-btn" id="facebook-signup" aria-label="Create account with Facebook">
+                        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                        <span>Continue with Facebook</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form id="forgot-password-form" class="auth-form" role="form" aria-label="Reset password form">
+                <div class="form-header">
+                    <h3>Reset Password</h3>
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <input type="email" id="forgot-email" placeholder="Email" required aria-label="Email address">
+                    <div class="field-error hidden" id="forgot-email-error"></div>
+                </div>
+                
+                <button type="submit" class="auth-btn primary" id="forgot-btn" aria-label="Send password reset link">
+                    <span class="btn-text">Send Reset Link</span>
+                    <i class="fas fa-spinner fa-spin btn-loading hidden" aria-hidden="true"></i>
+                    <i class="fas fa-paper-plane btn-icon" aria-hidden="true"></i>
+                </button>
+                
+                <button type="button" class="auth-btn secondary" id="back-to-login" aria-label="Return to login form">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Back to Login</span>
+                </button>
             </form>
         </div>
     </div>
 
+    <!-- Dashboard Container (Hidden by default) -->
+    <div id="dashboard-container" class="dashboard-container hidden">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-wallet"></i> ExpenseTracker Pro Dashboard</h1>
+            <div class="user-info">
+                <span id="user-email"></span>
+                <button id="logout-btn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="welcome-message">
+                <h2>Welcome to ExpenseTracker Pro!</h2>
+                <p id="welcome-text">You have successfully logged in.</p>
+                <div id="demo-data" class="demo-data hidden">
+                    <h3>Demo Data Loaded</h3>
+                    <p>This is guest access with sample data.</p>
+                </div>
+                
+                <!-- Debug Information -->
+                <div class="debug-info" style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                    <h3>🔧 Debug Information</h3>
+                    <p><strong>User Email:</strong> <span id="debug-email">Loading...</span></p>
+                    <p><strong>User ID:</strong> <span id="debug-user-id">Loading...</span></p>
+                    <p><strong>Is Guest:</strong> <span id="debug-is-guest">Loading...</span></p>
+                    <p><strong>Auth Token:</strong> <span id="debug-token">Loading...</span></p>
+                    <button onclick="testDashboard()" style="margin-top: 10px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        🧪 Test Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

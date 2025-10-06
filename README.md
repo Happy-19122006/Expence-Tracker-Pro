@@ -1,146 +1,195 @@
-# ExpenseTracker Pro - Modern Personal Finance Manager
+# ExpenseTracker Pro
 
-A beautiful, modern expense tracking application with Google and Facebook authentication, guest access, and comprehensive financial management features.
+A modern, secure personal finance management application with a comprehensive authentication system.
 
-## Features
+## 🚀 Quick Start
 
-### 🔐 Authentication Options
-- **Traditional Login/Signup**: Email and password authentication
-- **Google Sign-In**: One-click login with Google account
-- **Facebook Login**: Social authentication with Facebook
-- **Guest Access**: Browse the application without creating an account
+### Option 1: Express.js Server (Recommended)
+```bash
+# Install dependencies
+npm install
 
-### 💰 Financial Management
-- Add, edit, and delete income and expense transactions
-- Categorize transactions with custom categories
-- View comprehensive dashboard with statistics
-- Generate detailed analytics and reports
-- Export data to PDF and CSV formats
+# Start the server
+node server.js
 
-### 🎨 Modern UI/UX
-- Responsive design that works on all devices
-- Dark and light theme support
-- Beautiful animations and transitions
-- Intuitive user interface
-
-### 🔒 Security & Privacy
-- Local data storage (no server required)
-- Secure authentication with social providers
-- Guest mode with limited functionality
-- Login required for data modification
-
-## Setup Instructions
-
-### 1. Google Sign-In Setup
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google+ API
-4. Go to "Credentials" and create an OAuth 2.0 Client ID
-5. Add your domain to authorized origins
-6. Copy the Client ID and replace `YOUR_GOOGLE_CLIENT_ID` in `script.js` line 266
-
-### 2. Facebook Login Setup
-
-1. Go to [Facebook Developers](https://developers.facebook.com/)
-2. Create a new app
-3. Add Facebook Login product
-4. Configure OAuth redirect URIs
-5. Copy the App ID and replace `YOUR_FACEBOOK_APP_ID` in `script.js` line 274
-
-### 3. Local Development
-
-1. Clone or download the project files
-2. Open `index.html` in a web browser
-3. The application will work immediately with guest access
-4. For full functionality, set up the API keys as described above
-
-## Usage
-
-### Guest Access
-- Click "Guest Access" to browse without login
-- View sample data and explore features
-- Limited functionality - cannot save data
-
-### User Authentication
-- **Login**: Use existing credentials or social login
-- **Sign Up**: Create new account or use social signup
-- **Social Login**: One-click authentication with Google or Facebook
-
-### Key Features
-- **Dashboard**: Overview of financial status
-- **Transactions**: Add, edit, delete financial records
-- **Analytics**: Visual charts and trends
-- **Reports**: Export financial data
-- **Settings**: Customize categories and preferences
-
-## File Structure
-
-```
-expense-tracker/
-├── index.html          # Main HTML file
-├── script.js           # JavaScript functionality
-├── styles.css          # CSS styling
-├── favicon.svg         # Website icon
-└── README.md           # This file
+# Open http://localhost:3000
 ```
 
-## Browser Compatibility
+### Option 2: Python HTTP Server
+```bash
+# Navigate to public folder
+cd public
 
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
-- Mobile browsers
+# Start Python server
+python -m http.server 8000
 
-## Security Notes
+# Open http://localhost:8000
+```
 
-- All data is stored locally in the browser
-- No data is sent to external servers (except for authentication)
-- Social login uses official OAuth flows
-- Guest data is not persisted
+## 📁 Project Structure
 
-## Customization
+```
+expence/
+├── server.js                 # Express.js server
+├── package.json              # Node.js dependencies
+├── public/                   # Frontend files
+│   ├── index.html           # Main HTML file
+│   ├── styles.css           # CSS styles
+│   ├── script.js            # JavaScript logic
+│   ├── favicon.svg          # App icon
+│   └── *.md                 # Documentation
+├── backend/                  # Backend API (separate)
+└── node_modules/            # Dependencies
+```
 
-### Adding New Categories
-1. Go to Settings
-2. Add custom categories
-3. Categories are saved locally
+## 🎯 Features
 
-### Theme Customization
-- Toggle between light and dark themes
-- Theme preference is saved automatically
+### Authentication System
+- ✅ Email/Password Login
+- ✅ Account Registration
+- ✅ OAuth Integration (Google, Facebook)
+- ✅ Guest Access
+- ✅ Password Reset
+- ✅ Secure Token Management
 
-### Data Management
-- Export all data as JSON backup
-- Import previously exported data
-- Clear all data (requires confirmation)
+### User Experience
+- ✅ Responsive Design (Mobile, Tablet, Desktop)
+- ✅ Loading States & Animations
+- ✅ Error Handling & Validation
+- ✅ Accessibility (ARIA, Keyboard Navigation)
+- ✅ Real-time Password Strength Indicator
 
-## Troubleshooting
+### Security
+- ✅ Input Sanitization & Validation
+- ✅ XSS Protection
+- ✅ Secure Cookie Handling
+- ✅ HTTPS Detection
+- ✅ CSRF Protection
 
-### Social Login Not Working
-- Verify API keys are correctly set
-- Check browser console for errors
-- Ensure domains are authorized in provider settings
+### Technical
+- ✅ Modular JavaScript Architecture
+- ✅ API Service Layer
+- ✅ State Management
+- ✅ Event Handling
+- ✅ Console Logging for Debugging
 
-### Data Not Saving
-- Check if you're logged in (not in guest mode)
-- Verify browser allows local storage
-- Try clearing browser cache
+## 🔧 API Endpoints
 
-### Performance Issues
-- Close other browser tabs
-- Clear browser cache
-- Use a modern browser
+The Express.js server provides mock API endpoints:
 
-## Support
+- `POST /api/login` - User login
+- `POST /api/register` - User registration
+- `POST /api/logout` - User logout
+- `GET /api/validate-token` - Token validation
+- `POST /api/forgot-password` - Password reset
+- `GET /api/health` - Health check
 
-For issues or questions:
-1. Check browser console for error messages
-2. Verify API key configuration
-3. Ensure all files are in the same directory
-4. Try refreshing the page
+## 🧪 Testing
 
-## License
+### Manual Testing
+1. Open the application in your browser
+2. Test login/registration forms
+3. Try OAuth buttons (will redirect)
+4. Test guest access
+5. Verify responsive design
+6. Check console for API logs
 
-This project is open source and available under the MIT License.
+### Test Scenarios
+- Valid/Invalid login credentials
+- Password strength validation
+- Form field validation
+- Error handling
+- Loading states
+- Responsive design
+- Accessibility features
+
+## 📱 Browser Compatibility
+
+- ✅ Chrome (Latest)
+- ✅ Firefox (Latest)
+- ✅ Safari (Latest)
+- ✅ Edge (Latest)
+- ✅ Mobile browsers
+
+## 🛠️ Development
+
+### Local Development
+```bash
+# Clone repository
+git clone <repository-url>
+cd expence
+
+# Install dependencies
+npm install
+
+# Start development server
+node server.js
+
+# Open http://localhost:3000
+```
+
+### File Structure
+- `public/index.html` - Main application HTML
+- `public/styles.css` - Responsive CSS styles
+- `public/script.js` - JavaScript application logic
+- `server.js` - Express.js server with API endpoints
+
+## 🔒 Security Features
+
+- Input sanitization to prevent XSS attacks
+- Secure cookie handling for authentication tokens
+- HTTPS detection and secure flags
+- Password strength validation
+- Form validation and error handling
+
+## 📊 Performance
+
+- Fast loading with optimized assets
+- Smooth animations and transitions
+- Efficient API calls with error handling
+- Responsive design for all devices
+- Accessibility compliance (WCAG 2.1 AA)
+
+## 🚀 Deployment
+
+### Production Deployment
+1. Ensure all dependencies are installed
+2. Set environment variables if needed
+3. Start the server: `node server.js`
+4. Configure reverse proxy (nginx, Apache)
+5. Set up SSL certificate for HTTPS
+
+### Environment Variables
+```bash
+PORT=3000                    # Server port
+NODE_ENV=production          # Environment
+```
+
+## 📚 Documentation
+
+- [Testing Guide](public/TESTING_GUIDE.md) - Comprehensive testing instructions
+- [Button Test Plan](public/BUTTON_TEST_PLAN.md) - UI testing checklist
+- [Authentication Setup](public/AUTHENTICATION_SETUP.md) - Auth system documentation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue on GitHub
+- Check the documentation
+- Review the testing guides
+
+---
+
+**ExpenseTracker Pro** - Modern, secure, and user-friendly personal finance management.
