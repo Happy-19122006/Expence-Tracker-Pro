@@ -107,6 +107,12 @@ class ExpenseTracker {
         document.getElementById('import-file').addEventListener('change', (e) => this.handleFileImport(e));
         document.getElementById('clear-data-btn').addEventListener('click', () => this.clearAllData());
 
+        // Profile picture upload
+        document.getElementById('dp-input').addEventListener('change', (e) => this.handleProfilePictureUpload(e));
+        document.querySelector('.profile-picture-container').addEventListener('click', () => {
+            document.getElementById('dp-input').click();
+        });
+
         // Report period
         document.getElementById('report-period').addEventListener('change', (e) => this.updateReportPeriod(e.target.value));
 
@@ -187,6 +193,15 @@ class ExpenseTracker {
         const storedUser = localStorage.getItem('expenseTrackerCurrentUser');
         if (storedUser) {
             this.currentUser = JSON.parse(storedUser);
+        }
+
+        // Load saved profile picture
+        const savedProfilePicture = localStorage.getItem('profilePicture');
+        if (savedProfilePicture) {
+            const img = document.getElementById('dp-preview');
+            if (img) {
+                img.src = savedProfilePicture;
+            }
         }
     }
 
@@ -927,6 +942,35 @@ class ExpenseTracker {
             }
         };
         reader.readAsText(file);
+    }
+
+    handleProfilePictureUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('Please select a valid image file!', 'error');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            this.showNotification('Image size should be less than 5MB!', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = document.getElementById('dp-preview');
+            img.src = event.target.result;
+            
+            // Save to localStorage
+            localStorage.setItem('profilePicture', event.target.result);
+            
+            this.showNotification('Profile picture updated successfully!', 'success');
+        };
+        reader.readAsDataURL(file);
     }
 
     clearAllData() {
