@@ -18,6 +18,7 @@ class ExpenseTracker {
         this.currentFilter = 'all';
         this.editingTransaction = null;
         this.isFirstTime = !localStorage.getItem('expenseTrackerOnboarding');
+        this.preferredCurrency = localStorage.getItem('preferredCurrency') || 'INR';
         
         this.init();
     }
@@ -26,6 +27,7 @@ class ExpenseTracker {
         this.setupEventListeners();
         this.loadUserData();
         this.initializeTheme();
+        this.loadCurrencySettings();
         this.showLoadingScreen();
         
         // Simulate loading time
@@ -102,6 +104,7 @@ class ExpenseTracker {
 
         // Settings
         document.getElementById('theme-setting').addEventListener('change', (e) => this.changeTheme(e.target.value));
+        document.getElementById('currency-selector').addEventListener('change', (e) => this.changeCurrency(e.target.value));
         document.getElementById('add-category-btn').addEventListener('click', () => this.addCustomCategory());
         document.getElementById('export-data-btn').addEventListener('click', () => this.exportAllData());
         document.getElementById('import-data-btn').addEventListener('click', () => this.importData());
@@ -431,7 +434,7 @@ class ExpenseTracker {
                         </span>
                     </td>
                     <td class="transaction-amount ${transaction.type}">
-                        ${transaction.type === 'income' ? '+' : '-'}$${transaction.amount.toFixed(2)}
+                        ${transaction.type === 'income' ? '+' : ''}${this.formatCurrency(transaction.amount)}
                     </td>
                     <td>
                         <div class="transaction-actions">
@@ -539,9 +542,9 @@ class ExpenseTracker {
         const expenses = filteredTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
         const balance = income - expenses;
         
-        document.getElementById('balance-amount').textContent = `$${balance.toFixed(2)}`;
-        document.getElementById('income-amount').textContent = `$${income.toFixed(2)}`;
-        document.getElementById('expense-amount').textContent = `$${expenses.toFixed(2)}`;
+        document.getElementById('balance-amount').textContent = this.formatCurrency(balance);
+        document.getElementById('income-amount').textContent = this.formatCurrency(income);
+        document.getElementById('expense-amount').textContent = this.formatCurrency(expenses);
         document.getElementById('transaction-count').textContent = filteredTransactions.length;
         
         this.updateRecentTransactions(filteredTransactions);
@@ -594,7 +597,7 @@ class ExpenseTracker {
                         </div>
                     </div>
                     <div class="transaction-amount ${transaction.type}">
-                        ${transaction.type === 'income' ? '+' : '-'}$${transaction.amount.toFixed(2)}
+                        ${transaction.type === 'income' ? '+' : ''}${this.formatCurrency(transaction.amount)}
                     </div>
                 </div>
             `;
@@ -811,9 +814,9 @@ class ExpenseTracker {
         const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
         const balance = income - expenses;
         
-        document.getElementById('report-income').textContent = `$${income.toFixed(2)}`;
-        document.getElementById('report-expenses').textContent = `$${expenses.toFixed(2)}`;
-        document.getElementById('report-balance').textContent = `$${balance.toFixed(2)}`;
+        document.getElementById('report-income').textContent = this.formatCurrency(income);
+        document.getElementById('report-expenses').textContent = this.formatCurrency(expenses);
+        document.getElementById('report-balance').textContent = this.formatCurrency(balance);
     }
 
     updateReportPeriod(period) {
@@ -848,9 +851,9 @@ class ExpenseTracker {
         const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
         const balance = income - expenses;
         
-        doc.text(`Total Income: $${income.toFixed(2)}`, 20, 50);
-        doc.text(`Total Expenses: $${expenses.toFixed(2)}`, 20, 60);
-        doc.text(`Net Balance: $${balance.toFixed(2)}`, 20, 70);
+        doc.text(`Total Income: ${this.formatCurrency(income)}`, 20, 50);
+        doc.text(`Total Expenses: ${this.formatCurrency(expenses)}`, 20, 60);
+        doc.text(`Net Balance: ${this.formatCurrency(balance)}`, 20, 70);
         
         // Add transactions table
         doc.text('Transactions:', 20, 90);
@@ -863,7 +866,7 @@ class ExpenseTracker {
             }
             
             const category = this.categories.find(c => c.id === transaction.category);
-            doc.text(`${this.formatDate(transaction.date)} - ${transaction.description} - $${transaction.amount.toFixed(2)}`, 20, y);
+            doc.text(`${this.formatDate(transaction.date)} - ${transaction.description} - ${this.formatCurrency(transaction.amount)}`, 20, y);
             y += 10;
         });
         
@@ -1329,6 +1332,72 @@ class ExpenseTracker {
         localStorage.setItem('expenseTrackerOnboarding', 'completed');
         this.isFirstTime = false;
         this.showNotification('Welcome to ExpenseTracker Pro! 🎉', 'success');
+    }
+
+    // Currency Management
+    changeCurrency(currency) {
+        this.preferredCurrency = currency;
+        localStorage.setItem('preferredCurrency', currency);
+        
+        // Update currency preview
+        this.updateCurrencyPreview();
+        
+        // Update all displayed amounts
+        this.updateDashboard();
+        this.updateTransactionsTable();
+        this.updateReports();
+        this.updateAnalytics();
+        
+        this.showNotification(`Currency changed to ${this.getCurrencySymbol(currency)}`, 'success');
+    }
+
+    getCurrencySymbol(currency = this.preferredCurrency) {
+        const symbols = {
+            'INR': '₹',
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+            'JPY': '¥',
+            'CAD': 'C$',
+            'AUD': 'A$'
+        };
+        return symbols[currency] || '₹';
+    }
+
+    formatCurrency(amount, currency = this.preferredCurrency) {
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        return formatter.format(amount);
+    }
+
+    formatAmount(amount, showSign = false) {
+        const formatted = this.formatCurrency(amount);
+        if (showSign && amount > 0) {
+            return `+${formatted}`;
+        } else if (showSign && amount < 0) {
+            return formatted; // Already includes negative sign
+        }
+        return formatted;
+    }
+
+    updateCurrencyPreview() {
+        const preview = document.getElementById('currency-preview');
+        if (preview) {
+            preview.textContent = this.formatCurrency(1000);
+        }
+    }
+
+    loadCurrencySettings() {
+        // Set the currency selector to the saved value
+        const currencySelector = document.getElementById('currency-selector');
+        if (currencySelector) {
+            currencySelector.value = this.preferredCurrency;
+            this.updateCurrencyPreview();
+        }
     }
 }
 

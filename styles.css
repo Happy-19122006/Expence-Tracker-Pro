@@ -982,6 +982,29 @@ body {
     border-bottom: none;
 }
 
+.currency-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--card-bg);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.preview-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+#currency-preview {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-family: 'Courier New', monospace;
+}
+
 .setting-item label {
     font-weight: 500;
     color: var(--text-primary);
