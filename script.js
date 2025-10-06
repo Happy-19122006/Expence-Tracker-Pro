@@ -34,7 +34,7 @@ class ExpenseTracker {
         setTimeout(() => {
             this.hideLoadingScreen();
             this.checkAuthentication();
-        }, 2000);
+        }, 500);
     }
 
     showLoadingScreen() {
@@ -238,7 +238,7 @@ class ExpenseTracker {
         
         // Show onboarding for first-time users
         if (this.isFirstTime) {
-            setTimeout(() => this.startOnboarding(), 1000);
+            setTimeout(() => this.startOnboarding(), 500);
         }
         this.populateCategories();
         this.animateElements();
