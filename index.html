@@ -82,14 +82,31 @@
                     <button id="theme-toggle" class="theme-toggle">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <div class="user-menu">
-                        <button class="user-btn">
+                    <!-- Simple Profile Dropdown -->
+                    <div class="profile-container">
+                        <button id="profile-btn" class="profile-btn">
                             <i class="fas fa-user-circle"></i>
                             <span id="user-name">User</span>
+                            <i class="fas fa-chevron-down"></i>
                         </button>
-                        <button id="logout-btn" class="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
+                        
+                        <div id="profile-menu" class="profile-menu">
+                            <div class="profile-info">
+                                <div class="profile-avatar">
+                                    <img id="profile-img" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2MzY2RjEiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSI+CjxwYXRoIGQ9Ik0xMiAxMkMxNC4yMDkxIDEyIDE2IDEwLjIwOTEgMTYgOEMxNiA1Ljc5MDg2IDE0LjIwOTEgNCAxMiA0QzkuNzkwODYgNCA4IDUuNzkwODYgOCA4QzggMTAuMjA5MSA5Ljc5MDg2IDEyIDEyIDEyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEyIDE0QzcuNTgxNzIgMTQgNCAxNy41ODE3MiA0IDIySDEyVjE0WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cjwvc3ZnPgo=" alt="Profile" />
+                                </div>
+                                <div class="user-details">
+                                    <h4 id="profile-name">User Name</h4>
+                                    <p id="profile-email">user@example.com</p>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                <button id="logout-btn" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -392,35 +409,6 @@
                         </div>
                     </div>
 
-                    <div class="settings-card">
-                        <h3>Your Profile</h3>
-                        <div class="profile-section">
-                            <div class="dp-upload">
-                                <div class="profile-picture-container">
-                                    <img id="dp-preview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMzUiIHI9IjE1IiBmaWxsPSIjOUNBM0FGIi8+CjxwYXRoIGQ9Ik0yMCA4MEMyMCA2NS42NDA2IDMyLjY0MDYgNTMgNDcgNTNINjNDNzcuMzU5NCA1MyA5MCA2NS42NDA2IDkwIDgwVjEwMEgyMFY4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+" alt="Profile Picture" />
-                                    <div class="upload-overlay">
-                                        <i class="fas fa-camera"></i>
-                                        <span>Change Photo</span>
-                                    </div>
-                                </div>
-                                <input type="file" id="dp-input" accept="image/*" class="hidden" />
-                            </div>
-                            <div class="user-info">
-                                <div class="info-item">
-                                    <label>Name:</label>
-                                    <span id="user-name">Anonymous User</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Email:</label>
-                                    <span id="user-email">user@example.com</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Member Since:</label>
-                                    <span id="member-since">Today</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
         </main>

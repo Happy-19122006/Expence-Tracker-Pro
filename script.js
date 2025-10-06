@@ -106,15 +106,21 @@ class ExpenseTracker {
         document.getElementById('theme-setting').addEventListener('change', (e) => this.changeTheme(e.target.value));
         document.getElementById('currency-selector').addEventListener('change', (e) => this.changeCurrency(e.target.value));
         document.getElementById('add-category-btn').addEventListener('click', () => this.addCustomCategory());
+
+        // Profile Dropdown
+        document.getElementById('profile-btn').addEventListener('click', (e) => this.toggleProfileMenu(e));
+        document.getElementById('logout-btn').addEventListener('click', () => this.handleLogout());
         document.getElementById('export-data-btn').addEventListener('click', () => this.exportAllData());
         document.getElementById('import-data-btn').addEventListener('click', () => this.importData());
         document.getElementById('import-file').addEventListener('change', (e) => this.handleFileImport(e));
         document.getElementById('clear-data-btn').addEventListener('click', () => this.clearAllData());
 
-        // Profile picture upload
-        document.getElementById('dp-input').addEventListener('change', (e) => this.handleProfilePictureUpload(e));
-        document.querySelector('.profile-picture-container').addEventListener('click', () => {
-            document.getElementById('dp-input').click();
+
+        // Close profile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.profile-container')) {
+                this.closeProfileMenu();
+            }
         });
 
         // Report period
@@ -228,6 +234,7 @@ class ExpenseTracker {
         document.getElementById('user-name').textContent = this.currentUser.name;
         this.loadTransactions();
         this.updateDashboard();
+        this.updateProfileInfo();
         
         // Show onboarding for first-time users
         if (this.isFirstTime) {
@@ -953,34 +960,6 @@ class ExpenseTracker {
         reader.readAsText(file);
     }
 
-    handleProfilePictureUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            this.showNotification('Please select a valid image file!', 'error');
-            return;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            this.showNotification('Image size should be less than 5MB!', 'error');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = document.getElementById('dp-preview');
-            img.src = event.target.result;
-            
-            // Save to localStorage
-            localStorage.setItem('profilePicture', event.target.result);
-            
-            this.showNotification('Profile picture updated successfully!', 'success');
-        };
-        reader.readAsDataURL(file);
-    }
 
     clearAllData() {
         if (confirm('Are you sure you want to clear all data? This action cannot be undone!')) {
@@ -1397,6 +1376,75 @@ class ExpenseTracker {
         if (currencySelector) {
             currencySelector.value = this.preferredCurrency;
             this.updateCurrencyPreview();
+        }
+    }
+
+    // Profile Dropdown Methods
+    toggleProfileMenu(e) {
+        e.stopPropagation();
+        const menu = document.getElementById('profile-menu');
+        const btn = document.getElementById('profile-btn');
+        
+        const isOpen = menu.classList.contains('show');
+        
+        if (isOpen) {
+            this.closeProfileMenu();
+        } else {
+            this.openProfileMenu();
+        }
+    }
+
+    openProfileMenu() {
+        const menu = document.getElementById('profile-menu');
+        const btn = document.getElementById('profile-btn');
+        
+        menu.classList.add('show');
+        btn.classList.add('active');
+    }
+
+    closeProfileMenu() {
+        const menu = document.getElementById('profile-menu');
+        const btn = document.getElementById('profile-btn');
+        
+        menu.classList.remove('show');
+        btn.classList.remove('active');
+    }
+
+    updateProfileInfo() {
+        if (!this.currentUser) return;
+
+        // Update profile info in dropdown
+        document.getElementById('profile-name').textContent = this.currentUser.name;
+        document.getElementById('profile-email').textContent = this.currentUser.email;
+
+        // Load profile picture if available
+        const savedProfilePicture = localStorage.getItem('profilePicture');
+        if (savedProfilePicture) {
+            const profileImg = document.getElementById('profile-img');
+            if (profileImg) {
+                profileImg.src = savedProfilePicture;
+            }
+        }
+    }
+
+    handleLogout() {
+        this.closeProfileMenu();
+        if (confirm('Are you sure you want to logout?')) {
+            // Clear all data
+            localStorage.removeItem('expenseTrackerCurrentUser');
+            localStorage.removeItem('expenseTrackerUsers');
+            localStorage.removeItem('profilePicture');
+            localStorage.removeItem('preferredCurrency');
+            
+            // Reset app state
+            this.currentUser = null;
+            this.transactions = [];
+            this.preferredCurrency = 'INR';
+            
+            // Show auth screen
+            this.showAuthScreen();
+            
+            this.showNotification('Logged out successfully!', 'success');
         }
     }
 }
